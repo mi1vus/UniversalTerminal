@@ -8,10 +8,35 @@ using System.Threading.Tasks;
 
 namespace UniversalTermnalAPI
 {
-    public class Good
+    public abstract class Good
     {
-    
-    
+        public int Kind { get; set; }
+        public string Item { get; set; }
+        public string Name { get; set; }
+        public int DepartmentId { get; set; }
+        public int TaxID { get; set; }
+        public int Price { get; set; }
+    }
+
+    public class Good0 : Good
+    {
+        public string BatchDate { get; set; }
+        public int GroupId { get; set; }
+        public string UnitName { get; set; }
+        public int RestQuantity { get; set; }
+    }
+
+    public class Good1 : Good
+    {
+        public int GroupId { get; set; }
+        public string UnitName { get; set; }
+    }
+
+    public class Good2 : Good
+    {
+        public int ReturnDepartmentId { get; set; }
+        public bool ArbitraryPrice { get; set; }
+        public bool Complex { get; set; }
     }
 
     public class UTAPI
@@ -21,38 +46,38 @@ namespace UniversalTermnalAPI
 
         public List<Good> GetGoodsList()
         {
+            var goods_Raw = GET(req1, 14);
+
             return null;
         }
 
         string req1 = 
 "{" + Environment.NewLine +
-"  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
+"  \"Method\":\"GetGoodsList\"" + Environment.NewLine +
 "}" + Environment.NewLine;
-        string req2 =
-" { " + 
-"   \"Method\":\"GetFuellingPointConfig\" " + 
-" } ";
+
+//        string req2 =
+//" { " + 
+//"   \"Method\":\"GetFuellingPointConfig\" " + 
+//" } ";
         public UTAPI() {
-            var res = GET("http://127.0.0.1:44310?request_id=13");
+            var goods = GetGoodsList();
         }
 
         // Returns JSON string
-        string GET(string url)
+        string GET(string req_S, int id)
         {
             var boundary = "------------------------" + DateTime.Now.Ticks;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + "?request_id=" + id);
             request.Method = WebRequestMethods.Http.Post;
             request.ContentType = "multipart/form-data; boundary=" + boundary;
             try
             {
-                //byte[] reqData = Encoding.UTF8.GetBytes(req);
                 using (Stream dataStream = request.GetRequestStream())
                 {
                     var reqWriter = new StreamWriter(dataStream);
-                    reqWriter.Write(req1);
+                    reqWriter.Write(req_S);
                     reqWriter.Flush();
-
-                    //dataStream.Write(reqData, 0, reqData.Length);
                 }
 
                 WebResponse response = request.GetResponse();
@@ -61,12 +86,6 @@ namespace UniversalTermnalAPI
                     StreamReader reader = new StreamReader(responseStream, System.Text.Encoding.UTF8);
                     return reader.ReadToEnd();
                 }
-
-                //byte[] reqData = Encoding.UTF8.GetBytes(postData);
-                //using (Stream dataStream = req.GetRequestStream())
-                //{
-                //    dataStream.Write(reqData, 0, reqData.Length);
-                //}
             }
             catch (WebException ex)
             {
@@ -80,6 +99,5 @@ namespace UniversalTermnalAPI
                 throw;
             }
         }
-
     }
 }
