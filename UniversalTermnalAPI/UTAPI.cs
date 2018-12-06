@@ -39,32 +39,51 @@ namespace UniversalTermnalAPI
         public bool Complex { get; set; }
     }
 
-    public class UTAPI
+    public static class UTAPI
     {
-        int request_id = 0;
-        string url = "http://127.0.0.1:44310";
+        public static int request_id = 63;
+        private static string url = "http://127.0.0.1:44310";
 
-        public List<Good> GetGoodsList()
+        public static List<Good> GetGoodsList()
         {
-            var goods_Raw = GET(req1, 26);
+            var goods_Raw = GET(getGoodsList, request_id);
+            ++request_id;
             return JsonHelper.ParseGoods(goods_Raw);
         }
 
-        string req1 = 
-"{" + Environment.NewLine +
-"  \"Method\":\"GetGoodsList\"" + Environment.NewLine +
-"}" + Environment.NewLine;
+        public static Good GetGoodRestInfo(string item)
+        {
+            var req = getGoodInfo.Replace("{0}",item);
+            var good_Raw = GET(req, request_id);
+            ++request_id;
+            int kind = -1;
+            if (!good_Raw.Contains("Kind"))
+            {
+                var goods = GetGoodsList();
+                kind = goods.First(t => t.Item == item).Kind;
+            }
 
-//        string req2 =
-//" { " + 
-//"   \"Method\":\"GetFuellingPointConfig\" " + 
-//" } ";
-        public UTAPI() {
-            var goods = GetGoodsList();
+            return JsonHelper.ParseGoodPrepare(good_Raw, kind);
         }
 
+        public static string getGoodsList = 
+"{" + Environment.NewLine +
+"  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        public static string getGoodInfo =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
+"  ,\"Item\": \"{0}\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        //        string req2 =
+        //" { " + 
+        //"   \"Method\":\"GetFuellingPointConfig\" " + 
+        //" } ";
+
         // Returns JSON string
-        string GET(string req_S, int id)
+        public static string GET(string req_S, int id)
         {
             var boundary = "------------------------" + DateTime.Now.Ticks;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + "?request_id=" + id);

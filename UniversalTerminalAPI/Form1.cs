@@ -13,11 +13,11 @@ namespace UniversalTerminalAPI
 {
     public partial class Form1 : Form
     {
-        UTAPI API = new UTAPI();
         public Form1()
         {
             InitializeComponent();
-
+            var goods = UTAPI.GetGoodsList();
+            var good = UTAPI.GetGoodRestInfo(goods.Last().Item);
         }
     }
 }

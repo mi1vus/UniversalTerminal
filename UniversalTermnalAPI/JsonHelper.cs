@@ -18,8 +18,7 @@ namespace UniversalTermnalAPI
 //                return null;
 
             src = src.Substring(begInd + 7, endInd - begInd - 11);
-            src = src.Replace("\r\n      ", "");
-            src = src.Replace("\r\n    ", "");
+            src = src.Replace("\r\n      ", "").Replace("\r\n    ", "").Replace("\r\n  ", "");
 
             var result = new List<Good>();
 
@@ -44,7 +43,17 @@ namespace UniversalTermnalAPI
             }
             return result;
         }
-        public static Good ParseGood(string src)
+
+        public static Good ParseGoodPrepare(string src, int kind = -1) {
+            src = src.Replace("\r\n      ", "").Replace("\r\n    ", "").Replace("\r\n  ", "");
+            src = src.Substring(12, src.Length - 12 - 3);
+
+            if (kind >= 0)
+                src = src.Insert(1, "\"Kind\":" + kind + ",");
+
+            return ParseGood(src);
+        }
+        private static Good ParseGood(string src)
         {
             Good result = null;
             int kind = -1;
@@ -89,6 +98,7 @@ namespace UniversalTermnalAPI
                                 result = new Good2();
                                 break;
                         }
+                        result.Kind = kind;
                         break;
                     case "Item":
                         if (result != null)
@@ -148,7 +158,5 @@ namespace UniversalTermnalAPI
             }
             return result;
         }
-
-
     }
 }
