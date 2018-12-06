@@ -17,7 +17,9 @@ namespace UniversalTermnalAPI
 //"{\r\n  \"GoodsList\":[") || !src.EndsWith("]\r\n  }"))
 //                return null;
 
-            src = src.Substring(begInd, src.Length - endInd);
+            src = src.Substring(begInd + 7, endInd - begInd - 11);
+            src = src.Replace("\r\n      ", "");
+            src = src.Replace("\r\n    ", "");
 
             var result = new List<Good>();
 
