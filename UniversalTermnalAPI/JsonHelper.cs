@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UniversalTermnalAPI
 {
-    class LsonHelper
+    class JsonHelper
     {
         public static List<Good> ParseGoods(string src)
         {

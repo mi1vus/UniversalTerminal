@@ -47,7 +47,7 @@ namespace UniversalTermnalAPI
         public List<Good> GetGoodsList()
         {
             var goods_Raw = GET(req1, 14);
-
+            var goods = JsonHelper.ParseGoods(goods_Raw);
             return null;
         }
 
