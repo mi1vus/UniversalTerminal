@@ -110,55 +110,37 @@ namespace UniversalTermnalAPI
                         break;
                     case "BatchDate":
                     {
-                        var 
-                        if (result != null)
-                            result.BatchDate = val == "null" ? null : val;
+                        if ((result as Good0) != null)
+                            (result as Good0).BatchDate = val == "null" ? null : val;
                         break;
                     }
-                    case "Mail":
-                        if (result != null)
-                            result.Mail = val == "null" ? null : val;
+                    case "GroupId":
+                        if ((result as Good0) != null)
+                            (result as Good0).GroupId = int.Parse(val);
+                        if ((result as Good1) != null)
+                            (result as Good1).GroupId = int.Parse(val);
                         break;
-                    case "Work":
-                        if (result != null)
-                            result.Work = val == "null" ? null : val;
+                    case "UnitName":
+                        if ((result as Good0) != null)
+                            (result as Good0).UnitName = val == "null" ? null : val;
+                        if ((result as Good1) != null)
+                            (result as Good1).UnitName = val == "null" ? null : val;
                         break;
-                    case "Status":
-                        if (result != null)
-                            result.Status = val == "null" ? null : val;
+                    case "RestQuantity":
+                        if ((result as Good0) != null)
+                            (result as Good0).RestQuantity = int.Parse(val);
                         break;
-                    case "Deviz":
-                        result.Deviz = val == "null" ? null : val;
+                    case "ReturnDepartmentId":
+                        if ((result as Good2) != null)
+                            (result as Good2).ReturnDepartmentId = int.Parse(val);
                         break;
-                    case "Parties":
-                        result.Parties = val == "null" ? null : val;
+                    case "ArbitraryPrice":
+                        if ((result as Good2) != null)
+                            (result as Good2).ArbitraryPrice = bool.Parse(val);
                         break;
-                    case "PolitExp":
-                        result.PolitExp = val == "null" ? null : val;
-                        break;
-                    case "Female":
-                        result.Female = bool.Parse(val);
-                        break;
-                    case "Alcohol":
-                        result.Alcohol = bool.Parse(val);
-                        break;
-                    case "Smoking":
-                        result.Smoking = bool.Parse(val);
-                        break;
-                    case "Religions":
-                        result.Religions = val == "null" ? null : val;
-                        break;
-                    case "ExamPass":
-                        result.ExamPass = val == "null" ? null : val;
-                        break;
-                    case "Stage":
-                        result.Stage = int.Parse(val);
-                        break;
-                    case "State":
-                        result.State = (Models.TaskStates)int.Parse(val);
-                        break;
-                    case "Score":
-                        result.Score = int.Parse(val);
+                    case "Complex":
+                        if ((result as Good2) != null)
+                            (result as Good2).Complex = bool.Parse(val);
                         break;
                 }
             }
