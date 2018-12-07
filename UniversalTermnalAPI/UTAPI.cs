@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace UniversalTermnalAPI
 {
@@ -66,6 +67,13 @@ namespace UniversalTermnalAPI
         ACTIVE_TERMINAL = 1
     }
 
+    public class Discount
+    {
+        public int DiscountId { get; set; }
+        public int DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+    }
+        
     public class GoodsForSale
     {
         public int OpCode;
@@ -78,11 +86,18 @@ namespace UniversalTermnalAPI
 
     public class GoodForSale : Good
     {
-
+        public int FuellingPointId { get; set; }
+        public int PresetMode { get; set; }
+        public decimal PresetPrice { get; set; }
+        public decimal PresetAmount { get; set; }
+        public int DiscountCount { get; set; }
+        public int ItemCount { get; set; }
+        public Discount[] Discounts { get; set; }
     }
+
     public class OsnovanForSale : Osnovan
     {
-
+        public string CardNumber { get; set; }
     }
 
     public static class UTAPI
@@ -126,6 +141,12 @@ namespace UniversalTermnalAPI
             }
 
             return JsonHelper.ParseGoodPrepare(good_Raw, kind);
+        }
+
+        public static bool SetOrder(GoodsForSale goods)
+        {
+            var json = new JavaScriptSerializer().Serialize(goods);
+            return true;
         }
 
         public static string getGoodsList = 

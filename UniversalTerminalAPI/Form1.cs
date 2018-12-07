@@ -19,6 +19,9 @@ namespace UniversalTerminalAPI
             var goods = UTAPI.GetGoodsList();
             var good = UTAPI.GetGoodRestInfo(goods.Last().Item);
             var osnovs = UTAPI.GetOsnovanList();
+
+            var gForSale = new GoodsForSale();
+            var sale = UTAPI.SetOrder(gForSale);
         }
     }
 }
