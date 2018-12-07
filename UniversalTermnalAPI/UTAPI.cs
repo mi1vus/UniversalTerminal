@@ -41,21 +41,29 @@ namespace UniversalTermnalAPI
 
     public static class UTAPI
     {
-        public static int request_id = 63;
+        public static int request_code = 70;
+        public static int operation_code = 1;
+
         private static string url = "http://127.0.0.1:44310";
+
+        static UTAPI() {
+            ReadCodes();
+        }
 
         public static List<Good> GetGoodsList()
         {
-            var goods_Raw = GET(getGoodsList, request_id);
-            ++request_id;
+            var goods_Raw = GET(getGoodsList, request_code);
+            ++request_code;
+            SaveCodes();
             return JsonHelper.ParseGoods(goods_Raw);
         }
 
         public static Good GetGoodRestInfo(string item)
         {
             var req = getGoodInfo.Replace("{0}",item);
-            var good_Raw = GET(req, request_id);
-            ++request_id;
+            var good_Raw = GET(req, request_code);
+            ++request_code;
+            SaveCodes();
             int kind = -1;
             if (!good_Raw.Contains("Kind"))
             {
@@ -117,5 +125,52 @@ namespace UniversalTermnalAPI
                 throw;
             }
         }
+
+
+        private static void SaveCodes()
+        {
+                try
+                {
+                    //lock (OrderEventRequests)
+                    File.WriteAllText("codes.swp", $"request_code:{request_code};operation_code:{operation_code}");
+                    //Serialization.Serialize(OrderEventRequests.ToArray(), "unHistoredOrders.swp");
+                }
+                catch (Exception ex)
+                {
+                    //Logger.Write("saveUnHistoredOrders Error: " + ex.Message);
+                }
+        }
+
+        private static void ReadCodes()
+        {
+            try
+            {
+                var src = File.ReadAllText("codes.swp");
+                var pairs = src.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries) ;
+                foreach (var pair in pairs)
+                {
+                    var vals = pair.Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (vals.Length != 2)
+                        throw new Exception("Codes parse error!");
+
+                    switch (vals[0])
+                    {
+                        case "request_code":
+                            request_code = int.Parse(vals[1]);
+                            break;
+                        case "operation_code":
+                            operation_code = int.Parse(vals[1]);
+                            break;
+                    }
+                }
+                return;
+            }
+            catch (Exception ex)
+            {
+                //Logger.Write("readUnHistoredOrders Error: " + ex.Message);
+            }
+            return;
+        }
+
     }
 }
