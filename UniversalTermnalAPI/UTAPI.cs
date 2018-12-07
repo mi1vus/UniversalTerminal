@@ -86,17 +86,47 @@ namespace UniversalTermnalAPI
 
     public class GoodForSale : Good
     {
+        public GoodForSale(Good good)
+        {
+            Kind = good.Kind;
+            Item = good.Item;
+            Name = good.Name;
+            DepartmentId = good.DepartmentId;
+            TaxID = good.TaxID;
+            Price = good.Price;
+        }
+
         public int FuellingPointId { get; set; }
         public int PresetMode { get; set; }
         public decimal PresetPrice { get; set; }
         public decimal PresetAmount { get; set; }
         public int DiscountCount { get; set; }
-        public int ItemCount { get; set; }
         public Discount[] Discounts { get; set; }
     }
 
     public class OsnovanForSale : Osnovan
     {
+        public OsnovanForSale(Osnovan osnavan)
+        {
+            OsnovanId = osnavan.OsnovanId;
+            Name = osnavan.Name;
+            ShortName = osnavan.ShortName;
+            NoMoneyInReports = osnavan.NoMoneyInReports;
+            ZeroAmountsInCheque = osnavan.ZeroAmountsInCheque;
+            PriceInCheque = osnavan.PriceInCheque;
+            IsDefault = osnavan.IsDefault;
+            IsDisallowed = osnavan.IsDisallowed;
+            IsHidden = osnavan.IsHidden;
+            ForGoodsAndServices = osnavan.ForGoodsAndServices;
+            ForFuels = osnavan.ForFuels;
+            DisallowPrepayMode = osnavan.DisallowPrepayMode;
+            DisallowPostpayMode = osnavan.DisallowPostpayMode;
+            PrintOsnovanName = osnavan.PrintOsnovanName;
+            FuelReturnsToTank = osnavan.FuelReturnsToTank;
+            MaxLitersPreset = osnavan.MaxLitersPreset;
+            MaxMoneyPreset = osnavan.MaxMoneyPreset;
+            DisallowMovePreset = osnavan.DisallowMovePreset;
+        }
         public string CardNumber { get; set; }
     }
 
@@ -145,7 +175,13 @@ namespace UniversalTermnalAPI
 
         public static bool SetOrder(GoodsForSale goods)
         {
+            goods.OpCode = operation_code;
             var json = new JavaScriptSerializer().Serialize(goods);
+
+            ++request_code;
+            ++operation_code;
+            SaveCodes();
+
             return true;
         }
 

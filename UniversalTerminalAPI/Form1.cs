@@ -20,7 +20,14 @@ namespace UniversalTerminalAPI
             var good = UTAPI.GetGoodRestInfo(goods[9].Item);
             var osnovs = UTAPI.GetOsnovanList();
 
-            var gForSale = new GoodsForSale();
+            var gForSale = new GoodsForSale {
+                Host = Hosts.ACTIVE_TERMINAL.ToString(),
+                OpCode = 0,
+                ItemCount = goods.Count(),
+                Items = goods.Select(t=> new GoodForSale(t)).ToArray(),
+                PaymentCount = 1,
+                Payments = new[] { new OsnovanForSale(osnovs[3]) { CardNumber = "10101021215414"} }
+            };
             var sale = UTAPI.SetOrder(gForSale);
         }
     }
