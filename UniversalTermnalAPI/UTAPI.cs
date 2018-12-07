@@ -106,29 +106,30 @@ namespace UniversalTermnalAPI
         public Discount[] Discounts { get; set; }
     }
 
-    public class OsnovanForSale : Osnovan
+    public class OsnovanForSale// : Osnovan
     {
         public OsnovanForSale(Osnovan osnavan)
         {
             OsnovanId = osnavan.OsnovanId;
-            Name = osnavan.Name;
-            ShortName = osnavan.ShortName;
-            NoMoneyInReports = osnavan.NoMoneyInReports;
-            ZeroAmountsInCheque = osnavan.ZeroAmountsInCheque;
-            PriceInCheque = osnavan.PriceInCheque;
-            IsDefault = osnavan.IsDefault;
-            IsDisallowed = osnavan.IsDisallowed;
-            IsHidden = osnavan.IsHidden;
-            ForGoodsAndServices = osnavan.ForGoodsAndServices;
-            ForFuels = osnavan.ForFuels;
-            DisallowPrepayMode = osnavan.DisallowPrepayMode;
-            DisallowPostpayMode = osnavan.DisallowPostpayMode;
-            PrintOsnovanName = osnavan.PrintOsnovanName;
-            FuelReturnsToTank = osnavan.FuelReturnsToTank;
-            MaxLitersPreset = osnavan.MaxLitersPreset;
-            MaxMoneyPreset = osnavan.MaxMoneyPreset;
-            DisallowMovePreset = osnavan.DisallowMovePreset;
+            //Name = osnavan.Name;
+            //ShortName = osnavan.ShortName;
+            //NoMoneyInReports = osnavan.NoMoneyInReports;
+            //ZeroAmountsInCheque = osnavan.ZeroAmountsInCheque;
+            //PriceInCheque = osnavan.PriceInCheque;
+            //IsDefault = osnavan.IsDefault;
+            //IsDisallowed = osnavan.IsDisallowed;
+            //IsHidden = osnavan.IsHidden;
+            //ForGoodsAndServices = osnavan.ForGoodsAndServices;
+            //ForFuels = osnavan.ForFuels;
+            //DisallowPrepayMode = osnavan.DisallowPrepayMode;
+            //DisallowPostpayMode = osnavan.DisallowPostpayMode;
+            //PrintOsnovanName = osnavan.PrintOsnovanName;
+            //FuelReturnsToTank = osnavan.FuelReturnsToTank;
+            //MaxLitersPreset = osnavan.MaxLitersPreset;
+            //MaxMoneyPreset = osnavan.MaxMoneyPreset;
+            //DisallowMovePreset = osnavan.DisallowMovePreset;
         }
+        public int OsnovanId { get; set; }
         public string CardNumber { get; set; }
     }
 
