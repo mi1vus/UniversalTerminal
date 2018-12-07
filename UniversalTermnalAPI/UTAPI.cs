@@ -39,7 +39,7 @@ namespace UniversalTermnalAPI
         public bool Complex { get; set; }
     }
 
-    public abstract class Osnovan
+    public class Osnovan
     {
         public int OsnovanId { get; set; }
         public string Name { get; set; }
