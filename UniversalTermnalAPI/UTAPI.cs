@@ -41,7 +41,7 @@ namespace UniversalTermnalAPI
 
     public static class UTAPI
     {
-        public static int request_code = 70;
+        public static int request_code = 1;
         public static int operation_code = 1;
 
         private static string url = "http://127.0.0.1:44310";

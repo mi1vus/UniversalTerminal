@@ -17,7 +17,7 @@ namespace UniversalTerminalAPI
         {
             InitializeComponent();
             var goods = UTAPI.GetGoodsList();
-            var good = UTAPI.GetGoodRestInfo(goods.Last().Item);
+            var good = UTAPI.GetGoodRestInfo(goods[9].Item);
         }
     }
 }
