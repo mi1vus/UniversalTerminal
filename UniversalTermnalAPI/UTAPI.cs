@@ -40,7 +40,7 @@ namespace UniversalTermnalAPI
         public bool Complex { get; set; }
     }
 
-    public abstract class Osnovan
+    public class Osnovan
     {
         public int OsnovanId { get; set; }
         public string Name { get; set; }
@@ -102,7 +102,7 @@ namespace UniversalTermnalAPI
 
     public static class UTAPI
     {
-        public static int request_code = 70;
+        public static int request_code = 1;
         public static int operation_code = 1;
 
         private static string url = "http://127.0.0.1:44310";

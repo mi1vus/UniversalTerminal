@@ -195,8 +195,7 @@ namespace UniversalTermnalAPI
         }
         private static Osnovan ParseOsnovan(string src)
         {
-            Osnovan result = null;
-            int kind = -1;
+            Osnovan result = new Osnovan();
 
             if (!src.StartsWith("{") || !src.EndsWith("}"))
                 return null;
