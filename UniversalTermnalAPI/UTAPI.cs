@@ -84,18 +84,20 @@ namespace UniversalTermnalAPI
         public OsnovanForSale[] Payments;
     }
 
-    public class GoodForSale : Good
+    public class GoodForSale// : Good
     {
         public GoodForSale(Good good)
         {
             Kind = good.Kind;
             Item = good.Item;
-            Name = good.Name;
-            DepartmentId = good.DepartmentId;
-            TaxID = good.TaxID;
-            Price = good.Price;
+            //Name = good.Name;
+            //DepartmentId = good.DepartmentId;
+            //TaxID = good.TaxID;
+            //Price = good.Price;
         }
 
+        public int Kind { get; set; }
+        public string Item { get; set; }
         public int FuellingPointId { get; set; }
         public int PresetMode { get; set; }
         public decimal PresetPrice { get; set; }
@@ -201,10 +203,16 @@ namespace UniversalTermnalAPI
 "  ,\"Item\": \"{0}\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
-    //        string req2 =
-    //" { " + 
-    //"   \"Method\":\"GetFuellingPointConfig\" " + 
-    //" } ";
+        public static string setOrder =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
+"  ,\"Item\": \"{0}\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        //        string req2 =
+        //" { " + 
+        //"   \"Method\":\"GetFuellingPointConfig\" " + 
+        //" } ";
 
         // Returns JSON string
         public static string GET(string req_S, int id)
