@@ -39,6 +39,52 @@ namespace UniversalTermnalAPI
         public bool Complex { get; set; }
     }
 
+    public abstract class Osnovan
+    {
+        public int OsnovanId { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public bool NoMoneyInReports { get; set; }
+        public bool ZeroAmountsInCheque { get; set; }
+        public bool PriceInCheque { get; set; }
+        public bool IsDefault { get; set; }
+        public bool IsDisallowed { get; set; }
+        public bool IsHidden { get; set; }
+        public bool ForGoodsAndServices { get; set; }
+        public bool ForFuels { get; set; }
+        public bool DisallowPrepayMode { get; set; }
+        public bool DisallowPostpayMode { get; set; }
+        public bool PrintOsnovanName { get; set; }
+        public bool FuelReturnsToTank { get; set; }
+        public int MaxLitersPreset { get; set; }
+        public int MaxMoneyPreset { get; set; }
+        public bool DisallowMovePreset { get; set; }
+    }
+
+    public enum Hosts
+    {
+        ACTIVE_TERMINAL = 1
+    }
+
+    public class GoodsForSale
+    {
+        public int OpCode;
+        public string Host;
+        public int ItemCount;
+        public GoodForSale[] Items;
+        public int PaymentCount;
+        public OsnovanForSale[] Payments;
+    }
+
+    public class GoodForSale : Good
+    {
+
+    }
+    public class OsnovanForSale : Osnovan
+    {
+
+    }
+
     public static class UTAPI
     {
         public static int request_code = 70;
@@ -56,6 +102,14 @@ namespace UniversalTermnalAPI
             ++request_code;
             SaveCodes();
             return JsonHelper.ParseGoods(goods_Raw);
+        }
+
+        public static List<Osnovan> GetOsnovanList()
+        {
+            var osnovans_Raw = GET(getOsnovanList, request_code);
+            ++request_code;
+            SaveCodes();
+            return JsonHelper.ParsegetOsnovans(osnovans_Raw);
         }
 
         public static Good GetGoodRestInfo(string item)
@@ -79,16 +133,21 @@ namespace UniversalTermnalAPI
 "  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
+        public static string getOsnovanList =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetOsnovanList\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
         public static string getGoodInfo =
 "{" + Environment.NewLine +
 "  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
 "  ,\"Item\": \"{0}\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
-        //        string req2 =
-        //" { " + 
-        //"   \"Method\":\"GetFuellingPointConfig\" " + 
-        //" } ";
+    //        string req2 =
+    //" { " + 
+    //"   \"Method\":\"GetFuellingPointConfig\" " + 
+    //" } ";
 
         // Returns JSON string
         public static string GET(string req_S, int id)
