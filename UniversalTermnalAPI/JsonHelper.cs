@@ -88,13 +88,13 @@ namespace UniversalTermnalAPI
                         switch (kind)
                         {
                             case 0:
-                                result = new Good0();
+                                result = new GoodShop();
                                 break;
                             case 1:
-                                result = new Good1();
+                                result = new GoodService();
                                 break;
                             case 2:
-                                result = new Good2();
+                                result = new GoodFuel();
                                 break;
                         }
                         result.Kind = kind;
@@ -121,37 +121,37 @@ namespace UniversalTermnalAPI
                         break;
                     case "BatchDate":
                     {
-                        if ((result as Good0) != null)
-                            (result as Good0).BatchDate = val == "null" ? null : val;
+                        if ((result as GoodShop) != null)
+                            (result as GoodShop).BatchDate = val == "null" ? null : val;
                         break;
                     }
                     case "GroupId":
-                        if ((result as Good0) != null)
-                            (result as Good0).GroupId = int.Parse(val);
-                        if ((result as Good1) != null)
-                            (result as Good1).GroupId = int.Parse(val);
+                        if ((result as GoodShop) != null)
+                            (result as GoodShop).GroupId = int.Parse(val);
+                        if ((result as GoodService) != null)
+                            (result as GoodService).GroupId = int.Parse(val);
                         break;
                     case "UnitName":
-                        if ((result as Good0) != null)
-                            (result as Good0).UnitName = val == "null" ? null : val;
-                        if ((result as Good1) != null)
-                            (result as Good1).UnitName = val == "null" ? null : val;
+                        if ((result as GoodShop) != null)
+                            (result as GoodShop).UnitName = val == "null" ? null : val;
+                        if ((result as GoodService) != null)
+                            (result as GoodService).UnitName = val == "null" ? null : val;
                         break;
                     case "RestQuantity":
-                        if ((result as Good0) != null)
-                            (result as Good0).RestQuantity = int.Parse(val);
+                        if ((result as GoodShop) != null)
+                            (result as GoodShop).RestQuantity = int.Parse(val);
                         break;
                     case "ReturnDepartmentId":
-                        if ((result as Good2) != null)
-                            (result as Good2).ReturnDepartmentId = int.Parse(val);
+                        if ((result as GoodFuel) != null)
+                            (result as GoodFuel).ReturnDepartmentId = int.Parse(val);
                         break;
                     case "ArbitraryPrice":
-                        if ((result as Good2) != null)
-                            (result as Good2).ArbitraryPrice = bool.Parse(val);
+                        if ((result as GoodFuel) != null)
+                            (result as GoodFuel).ArbitraryPrice = bool.Parse(val);
                         break;
                     case "Complex":
-                        if ((result as Good2) != null)
-                            (result as Good2).Complex = bool.Parse(val);
+                        if ((result as GoodFuel) != null)
+                            (result as GoodFuel).Complex = bool.Parse(val);
                         break;
                 }
             }

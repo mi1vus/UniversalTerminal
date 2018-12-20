@@ -20,36 +20,26 @@ namespace UniversalTerminalAPI
             var good = UTAPI.GetGoodRestInfo(goods[9].Item);
             var osnovs = UTAPI.GetOsnovanList();
 
-            var gForSale = new GoodsForSale
+            int skip = 6;
+            int take = 2;
+            //int amount = 2;
+            //int quantity = 2;
+            var itemsToSale = goods.Skip(skip).Take(take)
+                .ToList();
+
+            for (int i = 0; i < itemsToSale.Count; ++i)
             {
-                Host = Hosts.ACTIVE_TERMINAL.ToString(),
-                OpCode = 0,
-                ItemCount = goods.Count(),
-                Items = goods.Select(t=> new GoodForSale(t) {
-                    FuellingPointId = 1,
-                    PresetMode = 1,
-                    PresetPrice = ((decimal)t.Price) / 100,
-                    PresetAmount = 1,
-                    DiscountCount = 1,
-                    Discounts = new[] 
-                    {
-                        new Discount() {
-                            DiscountId = 1,
-                            DiscountType = 2,
-                            DiscountValue = 0.01M
-                        }
-                    }
-                }).ToArray(),
-                PaymentCount = 1,
-                Payments = new[] 
-                {
-                    new OsnovanForSale(osnovs[3])
-                    {
-                        CardNumber = "10101021215414"
-                    }
-                }
-            };
-            var sale = UTAPI.SetOrder(gForSale);
+                itemsToSale[i].Discount = 0.2M * (i + 1);
+                if (itemsToSale[i] is GoodFuel)
+                    itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
+                else
+                    itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count - i);
+            }
+
+            itemsToSale = itemsToSale.Where(t => !(t is GoodShop) || (t as GoodShop).RestQuantity >= t.Quantity).ToList();
+
+            var sale = UTAPI.SetOrder(itemsToSale, osnovs[osnovs.Count - 1]);
+            //var ret = UTAPI.ReturnOrder(itemsToSale, osnovs[osnovs.Count - 1]);
         }
     }
 }

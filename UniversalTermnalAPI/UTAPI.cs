@@ -16,24 +16,27 @@ namespace UniversalTermnalAPI
         public string Name { get; set; }
         public int DepartmentId { get; set; }
         public int TaxID { get; set; }
-        public int Price { get; set; }
+        public decimal Price { get; set; }
+        public decimal Amount { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal Discount { get; set; }
     }
 
-    public class Good0 : Good
+    public class GoodShop : Good
     {
         public string BatchDate { get; set; }
         public int GroupId { get; set; }
         public string UnitName { get; set; }
-        public int RestQuantity { get; set; }
+        public decimal RestQuantity { get; set; }
     }
 
-    public class Good1 : Good
+    public class GoodService : Good
     {
         public int GroupId { get; set; }
         public string UnitName { get; set; }
     }
 
-    public class Good2 : Good
+    public class GoodFuel : Good
     {
         public int ReturnDepartmentId { get; set; }
         public bool ArbitraryPrice { get; set; }
@@ -65,6 +68,23 @@ namespace UniversalTermnalAPI
     public enum Hosts
     {
         ACTIVE_TERMINAL = 1
+    }
+    public enum Operations
+    {
+        Платеж = 0,
+        Подтверждение_платежа = 1,
+        Возврат = 2,
+        Подтверждение_возврата = 3,
+        Коррекция = 4,
+        Подтверждение_коррекции = 5,
+        Пополнение = 6, 
+        Подтверждение_пополнения = 7,
+        Открытие_смены = 8,
+        Установка = 11,
+        Сброс = 12, 
+        Аварийный_возврат = 13,
+        Транзакция_завершена = 14, 
+        Транзакция_отменена = 15            
     }
 
     public class Discount
@@ -98,10 +118,11 @@ namespace UniversalTermnalAPI
 
         public int Kind { get; set; }
         public string Item { get; set; }
-        public int FuellingPointId { get; set; }
+        //public int FuellingPointId { get; set; }
         public int PresetMode { get; set; }
         public decimal PresetPrice { get; set; }
         public decimal PresetAmount { get; set; }
+        public decimal PresetQuantity { get; set; }
         public int DiscountCount { get; set; }
         public Discount[] Discounts { get; set; }
     }
@@ -136,9 +157,38 @@ namespace UniversalTermnalAPI
     public static class UTAPI
     {
         public static int request_code = 1;
-        public static int operation_code = 1;
+        //public static int operation_code = 1;
 
         private static string url = "http://127.0.0.1:44310";
+
+        public static string getGoodsList =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        public static string getOsnovanList =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetOsnovanList\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        public static string getGoodInfo =
+"{" + Environment.NewLine +
+"  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
+"  ,\"Item\": \"{0}\"" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        public static string setOrder =
+"{" + Environment.NewLine +
+"  \"Method\": \"Preset\"" + Environment.NewLine +
+"  ,\"Transaction\": {0}" + Environment.NewLine +
+"}" + Environment.NewLine;
+
+        //        string req2 =
+        //" { " + 
+        //"   \"Method\":\"GetFuellingPointConfig\" " + 
+        //" } ";
+        //        "Method":"Preset"
+        //,"Transaction": 
 
         static UTAPI() {
             ReadCodes();
@@ -176,47 +226,91 @@ namespace UniversalTermnalAPI
             return JsonHelper.ParseGoodPrepare(good_Raw, kind);
         }
 
-        public static bool SetOrder(GoodsForSale goods)
+        public static bool SetOrder(List<Good> itemsToSale, Osnovan osnovan)
         {
-            goods.OpCode = operation_code;
-            var json = new JavaScriptSerializer().Serialize(goods);
+            var gForSale = new GoodsForSale
+            {
+                Host = Hosts.ACTIVE_TERMINAL.ToString(),
+                OpCode = (int)Operations.Установка,
+                ItemCount = itemsToSale.Count(),
+                Items = itemsToSale.Select(t => new GoodForSale(t)
+                {
+                    //FuellingPointId = 1,
+                    PresetMode = t is GoodFuel ? 1 : 0,
+                    PresetPrice = ((decimal)t.Price),
+                    PresetAmount = t is GoodFuel ? t.Amount : 0,
+                    PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
+                    DiscountCount = 1,//t?.Discounts.Count()??0,
+                    Discounts = new Discount[]{ new Discount{
+                        DiscountId = 1,
+                        DiscountType = 2,
+                        DiscountValue = t.Discount
+                    } }                    
+                }).ToArray(),
+                PaymentCount = 1,
+                Payments = new[]
+                {
+                    new OsnovanForSale(osnovan)
+                    {
+                        CardNumber = "10101021215414"
+                    }
+                }
+            };
 
+            var json = new JavaScriptSerializer().Serialize(gForSale);
+            var req = setOrder.Replace("{0}", json);
+            var order_Raw = GET(req, request_code);
+            
             ++request_code;
-            ++operation_code;
+            //++operation_code;
             SaveCodes();
 
             return true;
         }
 
-        public static string getGoodsList = 
-"{" + Environment.NewLine +
-"  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
-"}" + Environment.NewLine;
+        private static bool ReturnOrder(List<Good> itemsToSale, Osnovan osnovan)
+        {
+            var gForSale = new GoodsForSale
+            {
+                Host = Hosts.ACTIVE_TERMINAL.ToString(),
+                OpCode = (int)Operations.Возврат,
+                ItemCount = itemsToSale.Count(),
+                Items = itemsToSale.Select(t => new GoodForSale(t)
+                {
+                    //FuellingPointId = 1,
+                    PresetMode = t is GoodFuel ? 1 : 0,
+                    PresetPrice = ((decimal)t.Price),
+                    PresetAmount = t is GoodFuel ? t.Amount : 0,
+                    PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
+                    DiscountCount = 1,//t?.Discounts.Count()??0,
+                    Discounts = new Discount[]{ new Discount{
+                        DiscountId = 1,
+                        DiscountType = 2,
+                        DiscountValue = t.Discount
+                    } }
+                }).ToArray(),
+                PaymentCount = 1,
+                Payments = new[]
+                {
+                    new OsnovanForSale(osnovan)
+                    {
+                        CardNumber = "10101021215414"
+                    }
+                }
+            };
 
-        public static string getOsnovanList =
-"{" + Environment.NewLine +
-"  \"Method\": \"GetOsnovanList\"" + Environment.NewLine +
-"}" + Environment.NewLine;
+            var json = new JavaScriptSerializer().Serialize(gForSale);
+            var req = setOrder.Replace("{0}", json);
+            var order_Raw = GET(req, request_code);
 
-        public static string getGoodInfo =
-"{" + Environment.NewLine +
-"  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
-"  ,\"Item\": \"{0}\"" + Environment.NewLine +
-"}" + Environment.NewLine;
+            ++request_code;
+            //++operation_code;
+            SaveCodes();
 
-        public static string setOrder =
-"{" + Environment.NewLine +
-"  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
-"  ,\"Item\": \"{0}\"" + Environment.NewLine +
-"}" + Environment.NewLine;
+            return true;
+        }
 
-        //        string req2 =
-        //" { " + 
-        //"   \"Method\":\"GetFuellingPointConfig\" " + 
-        //" } ";
-
-        // Returns JSON string
-        public static string GET(string req_S, int id)
+        private static string GET(string req_S, int id)
         {
             var boundary = "------------------------" + DateTime.Now.Ticks;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + "?request_id=" + id);
@@ -251,15 +345,15 @@ namespace UniversalTermnalAPI
             }
         }
 
-
         private static void SaveCodes()
         {
                 try
                 {
                     //lock (OrderEventRequests)
-                    File.WriteAllText("codes.swp", $"request_code:{request_code};operation_code:{operation_code}");
-                    //Serialization.Serialize(OrderEventRequests.ToArray(), "unHistoredOrders.swp");
-                }
+                    File.WriteAllText("codes.swp", $"request_code:{request_code}");
+                //;operation_code:{operation_code}");
+                //Serialization.Serialize(OrderEventRequests.ToArray(), "unHistoredOrders.swp");
+            }
                 catch (Exception ex)
                 {
                     //Logger.Write("saveUnHistoredOrders Error: " + ex.Message);
@@ -283,9 +377,9 @@ namespace UniversalTermnalAPI
                         case "request_code":
                             request_code = int.Parse(vals[1]);
                             break;
-                        case "operation_code":
-                            operation_code = int.Parse(vals[1]);
-                            break;
+                        //case "operation_code":
+                        //    operation_code = int.Parse(vals[1]);
+                        //    break;
                     }
                 }
                 return;
