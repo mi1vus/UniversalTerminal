@@ -157,7 +157,7 @@ namespace UniversalTermnalAPI
             //DisallowMovePreset = osnavan.DisallowMovePreset;
         }
         public int OsnovanId { get; set; }
-        public string CardNumber { get; set; }
+        //public string CardNumber { get; set; }
     }
 
     public static class UTAPI
@@ -284,7 +284,7 @@ namespace UniversalTermnalAPI
                     {
                         new OsnovanForSale(osnovan)
                         {
-                            CardNumber = "10101021215414"
+                            //CardNumber = "10101021215414"
                         }
                     }
                 };
@@ -339,7 +339,7 @@ namespace UniversalTermnalAPI
                 {
                     new OsnovanForSale(osnovan)
                     {
-                        CardNumber = "10101021215414"
+                        //CardNumber = "10101021215414"
                     }
                 }
             };
