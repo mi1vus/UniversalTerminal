@@ -65,6 +65,12 @@ namespace UniversalTermnalAPI
         public bool DisallowMovePreset { get; set; }
     }
 
+    public class Error
+    {
+        public string ErrorCode { get; set; }
+        public string ErrorDescription { get; set; }
+    }
+
     public enum Hosts
     {
         ACTIVE_TERMINAL = 1
@@ -196,76 +202,115 @@ namespace UniversalTermnalAPI
 
         public static List<Good> GetGoodsList()
         {
-            var goods_Raw = GET(getGoodsList, request_code);
-            ++request_code;
-            SaveCodes();
-            return JsonHelper.ParseGoods(goods_Raw);
+            try
+            {
+                var goods_Raw = GET(getGoodsList, request_code);
+                ++request_code;
+                SaveCodes();
+                return JsonHelper.ParseGoods(goods_Raw);
+            }
+            catch (Exception ex)
+            {
+                LogError("GetGoodsList ERROR: " + ex.ToString(), ex.StackTrace);
+                return null;
+            }
         }
 
         public static List<Osnovan> GetOsnovanList()
         {
-            var osnovans_Raw = GET(getOsnovanList, request_code);
-            ++request_code;
-            SaveCodes();
-            return JsonHelper.ParsegetOsnovans(osnovans_Raw);
+            try
+            {
+                var osnovans_Raw = GET(getOsnovanList, request_code);
+                ++request_code;
+                SaveCodes();
+                return JsonHelper.ParsegetOsnovans(osnovans_Raw);
+            }
+            catch (Exception ex)
+            {
+                LogError("GetOsnovanList ERROR: " + ex.ToString(), ex.StackTrace);
+                return null;
+            }
         }
 
         public static Good GetGoodRestInfo(string item)
         {
-            var req = getGoodInfo.Replace("{0}",item);
-            var good_Raw = GET(req, request_code);
-            ++request_code;
-            SaveCodes();
-            int kind = -1;
-            if (!good_Raw.Contains("Kind"))
+            try
             {
-                var goods = GetGoodsList();
-                kind = goods.First(t => t.Item == item).Kind;
-            }
+                var req = getGoodInfo.Replace("{0}",item);
+                var good_Raw = GET(req, request_code);
+                ++request_code;
+                SaveCodes();
+                int kind = -1;
+                if (!good_Raw.Contains("Kind"))
+                {
+                    var goods = GetGoodsList();
+                    kind = goods.First(t => t.Item == item).Kind;
+                }
 
-            return JsonHelper.ParseGoodPrepare(good_Raw, kind);
+                return JsonHelper.ParseGoodPrepare(good_Raw, kind);
+            }
+            catch (Exception ex)
+            {
+                LogError("GetGoodRestInfo ERROR: " + ex.ToString(), ex.StackTrace);
+                return null;
+            }
         }
 
         public static bool SetOrder(List<Good> itemsToSale, Osnovan osnovan)
         {
-            var gForSale = new GoodsForSale
+            try
             {
-                Host = Hosts.ACTIVE_TERMINAL.ToString(),
-                OpCode = (int)Operations.Установка,
-                ItemCount = itemsToSale.Count(),
-                Items = itemsToSale.Select(t => new GoodForSale(t)
+                var gForSale = new GoodsForSale
                 {
-                    //FuellingPointId = 1,
-                    PresetMode = t is GoodFuel ? 1 : 0,
-                    PresetPrice = ((decimal)t.Price),
-                    PresetAmount = t is GoodFuel ? t.Amount : 0,
-                    PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
-                    DiscountCount = 1,//t?.Discounts.Count()??0,
-                    Discounts = new Discount[]{ new Discount{
-                        DiscountId = 1,
-                        DiscountType = 2,
-                        DiscountValue = t.Discount
-                    } }                    
-                }).ToArray(),
-                PaymentCount = 1,
-                Payments = new[]
-                {
-                    new OsnovanForSale(osnovan)
+                    Host = Hosts.ACTIVE_TERMINAL.ToString(),
+                    OpCode = (int)Operations.Установка,
+                    ItemCount = itemsToSale.Count(),
+                    Items = itemsToSale.Select(t => new GoodForSale(t)
                     {
-                        CardNumber = "10101021215414"
+                        //FuellingPointId = 1,
+                        PresetMode = t is GoodFuel ? 1 : 0,
+                        PresetPrice = ((decimal)t.Price),
+                        PresetAmount = t is GoodFuel ? t.Amount : 0,
+                        PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
+                        DiscountCount = 1,//t?.Discounts.Count()??0,
+                        Discounts = new Discount[]{ new Discount{
+                            DiscountId = 1,
+                            DiscountType = 2,
+                            DiscountValue = t.Discount
+                        } }                    
+                    }).ToArray(),
+                    PaymentCount = 1,
+                    Payments = new[]
+                    {
+                        new OsnovanForSale(osnovan)
+                        {
+                            CardNumber = "10101021215414"
+                        }
                     }
-                }
-            };
+                };
 
-            var json = new JavaScriptSerializer().Serialize(gForSale);
-            var req = setOrder.Replace("{0}", json);
-            var order_Raw = GET(req, request_code);
+                var json = new JavaScriptSerializer().Serialize(gForSale);
+                var req = setOrder.Replace("{0}", json);
+                var order_Raw = GET(req, request_code);
             
-            ++request_code;
-            //++operation_code;
-            SaveCodes();
+                ++request_code;
+                //++operation_code;
+                SaveCodes();
 
-            return true;
+                var res = JsonHelper.ParseResponseErrors(order_Raw);
+                if (res != null)
+                {
+                    LogError("SetOrder ERROR: " + res.ErrorDescription, "error code: " + res.ErrorCode);
+                    return false;
+                }
+                else
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                LogError("SetOrder ERROR: " + ex.ToString(), ex.StackTrace);
+                return false;
+            }
         }
 
         private static bool ReturnOrder(List<Good> itemsToSale, Osnovan osnovan)
@@ -279,7 +324,7 @@ namespace UniversalTermnalAPI
                 {
                     //FuellingPointId = 1,
                     PresetMode = t is GoodFuel ? 1 : 0,
-                    PresetPrice = ((decimal)t.Price),
+                    PresetPrice = t.Price,
                     PresetAmount = t is GoodFuel ? t.Amount : 0,
                     PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
                     DiscountCount = 1,//t?.Discounts.Count()??0,
@@ -339,7 +384,7 @@ namespace UniversalTermnalAPI
                 {
                     StreamReader reader = new StreamReader(responseStream, System.Text.Encoding.GetEncoding("utf-8"));
                     String errorText = reader.ReadToEnd();
-                    // log errorText
+                    LogError("WebException ERROR: " + errorText, ex.StackTrace);
                 }
                 throw;
             }
@@ -389,6 +434,25 @@ namespace UniversalTermnalAPI
                 //Logger.Write("readUnHistoredOrders Error: " + ex.Message);
             }
             return;
+        }
+
+        private static string LogError(string msg, string path)
+        {
+            bool res = false;
+            try
+            {
+                if (!System.IO.Directory.Exists("Logs/"))
+                    System.IO.Directory.CreateDirectory("Logs/");
+
+                var fpath = "Logs/" + DateTime.Today.ToString("dd_MM_yyyy") + ".txt";
+                var text = string.Format(
+    @"[{0}] - {1}" + Environment.NewLine + "+++ [{2}]" + Environment.NewLine, DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), msg, path);
+                System.IO.File.AppendAllText(fpath, text);
+                res = true;
+            }
+            catch { }
+
+            return res.ToString();
         }
 
     }

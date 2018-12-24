@@ -301,6 +301,29 @@ namespace UniversalTermnalAPI
             return result;
         }
 
+        public static Error ParseResponseErrors(string src) {
+            var lines = src.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var res = new Error();
+            foreach (var line in lines)
+            {
+                var pair = line.Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                if (pair[0].EndsWith("\"ErrorCode\""))
+                {
+                    res.ErrorCode = pair[1];
+                }
+                else if (pair[0].EndsWith("\"ErrorDescription\""))
+                {
+                    res.ErrorDescription = pair[1];
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(res.ErrorCode) && !string.IsNullOrWhiteSpace(res.ErrorDescription) &&
+                res.ErrorCode != "0,")
+            {
+                return res;
+            }
+            else
+                return null;
+        }
     }
 
 }
