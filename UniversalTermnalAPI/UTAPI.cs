@@ -162,6 +162,9 @@ namespace UniversalTermnalAPI
         //public string CardNumber { get; set; }
     }
 
+    /// <summary>
+    /// Initialize variables url and port!
+    /// </summary>
     public static class UTAPI
     {
         private static IniParser iniFile;
@@ -169,25 +172,25 @@ namespace UniversalTermnalAPI
         private static int request_code = 1;
         //public static int operation_code = 1;
 
-        private static string url = "http://127.0.0.1:44310";
-
-        public static string getGoodsList =
+        public static string url = "http://127.0.0.1";
+        public static string port = "44310";
+        private static string getGoodsList =
 "{" + Environment.NewLine +
 "  \"Method\": \"GetGoodsList\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
-        public static string getOsnovanList =
+        private static string getOsnovanList =
 "{" + Environment.NewLine +
 "  \"Method\": \"GetOsnovanList\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
-        public static string getGoodInfo =
+        private static string getGoodInfo =
 "{" + Environment.NewLine +
 "  \"Method\": \"GetGoodInfo\"" + Environment.NewLine +
 "  ,\"Item\": \"{0}\"" + Environment.NewLine +
 "}" + Environment.NewLine;
 
-        public static string setOrder =
+        private static string setOrder =
 "{" + Environment.NewLine +
 "  \"Method\": \"Preset\"" + Environment.NewLine +
 "  ,\"Transaction\": {0}" + Environment.NewLine +
@@ -365,7 +368,7 @@ namespace UniversalTermnalAPI
         private static string GET(string req_S, int id)
         {
             var boundary = "------------------------" + DateTime.Now.Ticks;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + "?request_id=" + id);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + ":" + port + "?request_id=" + id);
             request.Method = WebRequestMethods.Http.Post;
             request.ContentType = "multipart/form-data; boundary=" + boundary;
             try
