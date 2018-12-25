@@ -155,6 +155,7 @@ namespace UniversalTermnalAPI
                         break;
                 }
             }
+            result.InternalGroupId = result.Kind + "_" + result.Item;
             return result;
         }
 

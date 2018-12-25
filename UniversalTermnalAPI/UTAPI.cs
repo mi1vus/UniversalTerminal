@@ -20,6 +20,8 @@ namespace UniversalTermnalAPI
         public decimal Amount { get; set; }
         public decimal Quantity { get; set; }
         public decimal Discount { get; set; }
+        public string InternalGroupId { get; set; }
+        public string InternalGroupName { get; set; }
     }
 
     public class GoodShop : Good
@@ -162,7 +164,9 @@ namespace UniversalTermnalAPI
 
     public static class UTAPI
     {
-        public static int request_code = 1;
+        private static IniParser iniFile;
+
+        private static int request_code = 1;
         //public static int operation_code = 1;
 
         private static string url = "http://127.0.0.1:44310";
@@ -198,6 +202,7 @@ namespace UniversalTermnalAPI
 
         static UTAPI() {
             ReadCodes();
+            iniFile = new IniParser("groups.ini");
         }
 
         public static List<Good> GetGoodsList()
@@ -207,7 +212,9 @@ namespace UniversalTermnalAPI
                 var goods_Raw = GET(getGoodsList, request_code);
                 ++request_code;
                 SaveCodes();
-                return JsonHelper.ParseGoods(goods_Raw);
+                var listGoods = JsonHelper.ParseGoods(goods_Raw);
+                listGoods.ForEach(t => t.InternalGroupName = iniFile.GetSection(t.InternalGroupId));
+                return listGoods;
             }
             catch (Exception ex)
             {
