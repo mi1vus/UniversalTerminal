@@ -29,8 +29,8 @@ namespace UniversalTerminalAPI
 
             for (int i = 0; i < itemsToSale.Count; ++i)
             {
-                //br1
-                itemsToSale[i].Discount = 0.2M * (i + 1);
+                //br2
+                itemsToSale[i].Discount = 0.3M * (i + 1);
                 if (itemsToSale[i] is GoodFuel)
                     itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
                 else
