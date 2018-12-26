@@ -29,7 +29,7 @@ namespace UniversalTerminalAPI
 
             for (int i = 0; i < itemsToSale.Count; ++i)
             {
-                itemsToSale[i].Discount = 0.2M * (i + 1);
+                itemsToSale[i].Discount = 0.3M * (i + 1);
                 if (itemsToSale[i] is GoodFuel)
                     itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
                 else
@@ -38,6 +38,7 @@ namespace UniversalTerminalAPI
 
             itemsToSale = itemsToSale.Where(t => !(t is GoodShop) || (t as GoodShop).RestQuantity >= t.Quantity).ToList();
 
+            // Branch 2
             var sale = UTAPI.SetOrder(itemsToSale, osnovs[osnovs.Count - 1]);
             //var ret = UTAPI.ReturnOrder(itemsToSale, osnovs[osnovs.Count - 1]);
         }
