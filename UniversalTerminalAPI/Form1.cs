@@ -20,7 +20,8 @@ namespace UniversalTerminalAPI
             var good = UTAPI.GetGoodRestInfo(goods[9].Item);
             var osnovs = UTAPI.GetOsnovanList();
 
-            int skip = 6;
+            //mast
+            int skip = 7;
             int take = 2;
             //int amount = 2;
             //int quantity = 2;
