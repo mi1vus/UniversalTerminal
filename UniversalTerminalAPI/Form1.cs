@@ -21,6 +21,7 @@ namespace UniversalTerminalAPI
             var osnovs = UTAPI.GetOsnovanList();
 
             //mast
+            //JIRA Comment
             int skip = 7;
             int take = 2;
             //int amount = 2;
