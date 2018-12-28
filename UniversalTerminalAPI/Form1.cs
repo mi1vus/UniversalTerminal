@@ -29,6 +29,7 @@ namespace UniversalTerminalAPI
             var itemsToSale = goods.Skip(skip).Take(take)
                 .ToList();
 
+            //UT-2 commit
             for (int i = 0; i < itemsToSale.Count; ++i)
             {
                 //br2
