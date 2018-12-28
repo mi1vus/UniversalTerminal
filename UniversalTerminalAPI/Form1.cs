@@ -42,7 +42,7 @@ namespace UniversalTerminalAPI
             //UT-4
             itemsToSale = itemsToSale.Where(t => !(t is GoodShop) || (t as GoodShop).RestQuantity >= t.Quantity).ToList();
 
-            var sale = UTAPI.SetOrder(itemsToSale, /*new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
+            var sale = UTAPI.SetOrder(itemsToSale, /* new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
             //var ret = UTAPI.ReturnOrder(itemsToSale, osnovs[osnovs.Count - 1]);
         }
     }
