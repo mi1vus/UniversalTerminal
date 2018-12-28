@@ -39,7 +39,7 @@ namespace UniversalTerminalAPI
                 else
                     itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count - i);
             }
-
+            //UT-4
             itemsToSale = itemsToSale.Where(t => !(t is GoodShop) || (t as GoodShop).RestQuantity >= t.Quantity).ToList();
 
             var sale = UTAPI.SetOrder(itemsToSale, /*new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
