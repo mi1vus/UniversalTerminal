@@ -16,7 +16,7 @@ namespace UniversalTerminalAPI
         public Form1()
         {
             InitializeComponent();
-            var goods = UTAPI.GetGoodsList();
+            var goods = UTAPI.GetGoods();
             var good = UTAPI.GetGoodRestInfo(goods[9].Item);
             var osnovs = UTAPI.GetOsnovanList();
 
@@ -27,24 +27,26 @@ namespace UniversalTerminalAPI
             //int amount = 2;
             //int quantity = 2;
             var itemsToSale = goods.Skip(skip).Take(take)
-                .ToList();
+                .ToArray();
 
             //
             //UT-2 commi t
-            for (int i = 0; i < itemsToSale.Count; ++i)
+            for (int i = 0; i < itemsToSale.Count(); ++i)
             {
                 //br2
-                itemsToSale[i].Discount = 0.3M * (i + 1);
-                if (itemsToSale[i] is GoodFuel)
-                    itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
-                else
-                    itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count - i);
+                itemsToSale[i].SetDiscount(0.3M * (i + 1));
+                itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count() - i);
+                //itemsToSale[i].Discount = 0.3M * (i + 1);
+                //if (itemsToSale[i] is GoodFuel)
+                //    itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
+                //else
+                //    itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count - i);
             }
             //UT-4
-            itemsToSale = itemsToSale.Where(t => !(t is GoodShop) || (t as GoodShop).RestQuantity >= t.Quantity).ToList();
+            itemsToSale = itemsToSale.Where(t => /*!(t is GoodShop) || (t as GoodShop).*/t.RestQuantity >= t.Quantity).ToArray();
 
-            var sale = UTAPI.SetOrder(itemsToSale, /*new Osnovan { OsnovanId = 23} );// */osnovs[osnovs.Count - 1]);
-            var sale = UTAPI.SetOrder(itemsToSale, /* new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
+            var sale = UTAPI.SetOrder(itemsToSale, /*new Osnovan { OsnovanId = 23} );// */osnovs[osnovs.Count - 1].OsnovanId);
+            //var sale = UTAPI.SetOrder(itemsToSale, /* new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
             //var ret = UTAPI.ReturnOrder(itemsToSale, osnovs[osnovs.Count - 1]);
         }
     }

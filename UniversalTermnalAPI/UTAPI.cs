@@ -9,6 +9,35 @@ using System.Web.Script.Serialization;
 
 namespace UniversalTermnalAPI
 {
+    public class ShopItemInfo
+    {
+        public string GroupName { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get { var res = BasePrice - Discount; return res > 0 ? res : 0; } }
+
+        public decimal BasePrice { get; set; }
+        public decimal Discount { get; set; }
+        public string DiscountInformation { get; set; }
+        public string Code { get; set; }
+        public string Item { get; set; }
+
+        public string Measure { get; set; }
+        public int TaxNumber { get; set; }
+        public int Section { get; set; }
+        public decimal RestQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal Amount { get { return Quantity * Price; } }
+        public void SetDiscount(decimal Discont, string Comment = null, bool InPercent = false)
+        {
+            Discount = InPercent ? Math.Round((BasePrice / 100) * Discont, 2) : Discont;
+            DiscountInformation = Comment;
+        }
+        public override string ToString()
+        {
+            return $"{Name}: {Price}р * {Quantity}{Measure} = {Amount}р";
+        }
+    }
+
     public abstract class Good
     {
         public int Kind { get; set; }
@@ -22,6 +51,7 @@ namespace UniversalTermnalAPI
         public decimal Discount { get; set; }
         public string InternalGroupId { get; set; }
         public string InternalGroupName { get; set; }
+        public int InternalSectionId { get; set; }
     }
 
     public class GoodShop : Good
@@ -158,6 +188,27 @@ namespace UniversalTermnalAPI
             //MaxMoneyPreset = osnavan.MaxMoneyPreset;
             //DisallowMovePreset = osnavan.DisallowMovePreset;
         }
+        public OsnovanForSale(int osnovanId)
+        {
+            OsnovanId = osnovanId;
+            //Name = osnavan.Name;
+            //ShortName = osnavan.ShortName;
+            //NoMoneyInReports = osnavan.NoMoneyInReports;
+            //ZeroAmountsInCheque = osnavan.ZeroAmountsInCheque;
+            //PriceInCheque = osnavan.PriceInCheque;
+            //IsDefault = osnavan.IsDefault;
+            //IsDisallowed = osnavan.IsDisallowed;
+            //IsHidden = osnavan.IsHidden;
+            //ForGoodsAndServices = osnavan.ForGoodsAndServices;
+            //ForFuels = osnavan.ForFuels;
+            //DisallowPrepayMode = osnavan.DisallowPrepayMode;
+            //DisallowPostpayMode = osnavan.DisallowPostpayMode;
+            //PrintOsnovanName = osnavan.PrintOsnovanName;
+            //FuelReturnsToTank = osnavan.FuelReturnsToTank;
+            //MaxLitersPreset = osnavan.MaxLitersPreset;
+            //MaxMoneyPreset = osnavan.MaxMoneyPreset;
+            //DisallowMovePreset = osnavan.DisallowMovePreset;
+        }
         public int OsnovanId { get; set; }
         //public string CardNumber { get; set; }
     }
@@ -208,7 +259,34 @@ namespace UniversalTermnalAPI
             iniFile = new IniParser("groups.ini");
         }
 
-        public static List<Good> GetGoodsList()
+        public static ShopItemInfo[] GetGoods(string GroupName = null)
+        {
+            IEnumerable<Good> selectedGoods = GetGoodsList();
+            if (!string.IsNullOrWhiteSpace(GroupName))
+                selectedGoods = selectedGoods.Where(t => t.InternalGroupName == GroupName);
+
+            return selectedGoods.Select(t => new ShopItemInfo
+            {
+                GroupName = t.InternalGroupName,
+                Name = t.Name,
+
+                BasePrice = t.Price,
+                Code = t.Kind + "_" + t.Item,
+                Item = t.Item,
+
+                Measure = t is GoodFuel ? "" : (t is GoodShop) ? (t as GoodShop).UnitName : (t as GoodService).UnitName,
+                TaxNumber = t.TaxID,
+                Section = t.InternalSectionId,
+                RestQuantity = (t as GoodShop)?.RestQuantity ?? 0,
+            }).ToArray();
+        }
+
+        public static bool SetOrder(ShopItemInfo[] Items, int osnovanId)
+        {
+            return true;
+        }
+
+        private static List<Good> GetGoodsList()
         {
             try
             {
@@ -217,6 +295,7 @@ namespace UniversalTermnalAPI
                 SaveCodes();
                 var listGoods = JsonHelper.ParseGoods(goods_Raw);
                 listGoods.ForEach(t => t.InternalGroupName = iniFile.GetSection(t.InternalGroupId));
+                listGoods.ForEach(t => t.InternalSectionId = int.Parse(iniFile.GetSetting(t.InternalGroupName, t.Kind + "_" + t.Item)));
                 return listGoods;
             }
             catch (Exception ex)
@@ -266,7 +345,7 @@ namespace UniversalTermnalAPI
             }
         }
 
-        public static bool SetOrder(List<Good> itemsToSale, Osnovan osnovan)
+        private static bool SetOrder(List<Good> itemsToSale, int osnovanId)
         {
             try
             {
@@ -292,7 +371,7 @@ namespace UniversalTermnalAPI
                     PaymentCount = 1,
                     Payments = new[]
                     {
-                        new OsnovanForSale(osnovan)
+                        new OsnovanForSale(osnovanId)
                         {
                             //CardNumber = "10101021215414"
                         }
@@ -464,6 +543,5 @@ namespace UniversalTermnalAPI
 
             return res.ToString();
         }
-
     }
 }
