@@ -17,6 +17,7 @@ namespace UniversalTerminalAPI
         {
             InitializeComponent();
             var goods = UTAPI.GetGoods();
+            //var goodsL = UTAPI.GetGoodsList();
             var good = UTAPI.GetGoodRestInfo(goods[9].Item);
             var osnovs = UTAPI.GetOsnovanList();
 
@@ -28,6 +29,8 @@ namespace UniversalTerminalAPI
             //int quantity = 2;
             var itemsToSale = goods.Skip(skip).Take(take)
                 .ToArray();
+            //var itemsToSaleL = goodsL.Skip(skip).Take(take)
+            //    .ToList();
 
             //
             //UT-2 commi t
@@ -36,17 +39,17 @@ namespace UniversalTerminalAPI
                 //br2
                 itemsToSale[i].SetDiscount(0.3M * (i + 1));
                 itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count() - i);
-                //itemsToSale[i].Discount = 0.3M * (i + 1);
-                //if (itemsToSale[i] is GoodFuel)
-                //    itemsToSale[i].Amount = itemsToSale[i].Price * 2.5M;
+                //itemsToSaleL[i].Discount = 0.3M * (i + 1);
+                //if (itemsToSaleL[i] is GoodFuel)
+                //    itemsToSaleL[i].Amount = itemsToSale[i].Price * 2.5M;
                 //else
-                //    itemsToSale[i].Quantity = 1.0M * (itemsToSale.Count - i);
+                //    itemsToSaleL[i].Quantity = 1.0M * (itemsToSaleL.Count - i);
             }
             //UT-4
             itemsToSale = itemsToSale.Where(t => /*!(t is GoodShop) || (t as GoodShop).*/t.RestQuantity >= t.Quantity).ToArray();
 
             var sale = UTAPI.SetOrder(itemsToSale, /*new Osnovan { OsnovanId = 23} );// */osnovs[osnovs.Count - 1].OsnovanId);
-            //var sale = UTAPI.SetOrder(itemsToSale, /* new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1]);
+            //var saleL = UTAPI.SetOrder(itemsToSaleL, /* new Osnovan { OsnovanId = 23} );//*/osnovs[osnovs.Count - 1].OsnovanId);
             //var ret = UTAPI.ReturnOrder(itemsToSale, osnovs[osnovs.Count - 1]);
         }
     }

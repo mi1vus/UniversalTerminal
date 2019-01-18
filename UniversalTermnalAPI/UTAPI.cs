@@ -283,7 +283,48 @@ namespace UniversalTermnalAPI
 
         public static bool SetOrder(ShopItemInfo[] Items, int osnovanId)
         {
-            return true;
+            return SetOrder(Items.Select(t=> GoodFabric(t)).ToList(), osnovanId);
+        }
+
+        private static Good GoodFabric(ShopItemInfo item)
+        {
+            Good good = null;
+
+            var ids = item.Code.Split(new[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+            if (ids.Count() != 2)
+                return null;
+
+            int kind = int.Parse(ids[0]);
+            string code = ids[1];
+
+            switch (kind)
+            {
+                case 0:
+                    good = new GoodShop() { UnitName = item.Measure, RestQuantity = item.RestQuantity, Quantity = item.Quantity};
+                    break;
+                case 1:
+                    good = new GoodService() { UnitName = item.Measure, Quantity = item.Quantity };
+                    break;
+                case 2:
+                    good = new GoodFuel() { Amount = item.Quantity};
+                    break;
+                default:
+                    return null;
+                    break;
+            }
+            good.Kind = kind;
+            good.Item = code;
+            good.InternalGroupName = item.GroupName;
+            good.Name = item.Name;
+
+            good.Price = item.BasePrice;
+
+            good.TaxID = item.TaxNumber;
+            good.InternalSectionId = item.Section;
+
+            good.Discount = item.Discount;
+
+            return good;
         }
 
         private static List<Good> GetGoodsList()
@@ -361,12 +402,13 @@ namespace UniversalTermnalAPI
                         PresetPrice = ((decimal)t.Price),
                         PresetAmount = t is GoodFuel ? t.Amount : 0,
                         PresetQuantity = t is GoodFuel ? 0 : t.Quantity,
-                        DiscountCount = 1,//t?.Discounts.Count()??0,
-                        Discounts = new Discount[]{ new Discount{
+                        DiscountCount = t.Discount == 0 ? 0 : 1,
+                        Discounts = t.Discount == 0 ? new Discount[] { } : new Discount[]{ new Discount{
                             DiscountId = 1,
                             DiscountType = 2,
                             DiscountValue = t.Discount
-                        } }                    
+                        } },
+
                     }).ToArray(),
                     PaymentCount = 1,
                     Payments = new[]
